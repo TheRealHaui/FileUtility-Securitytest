@@ -22,7 +22,7 @@ public class FileUtility {
 
     public static void main(String... aArgs) throws IOException {
 
-
+        System.out.println( (byte) 0x14 );
         String currentDir = System.getProperty("user.dir");
 
 
@@ -101,12 +101,12 @@ public class FileUtility {
             modifiedFileName =  file.getAbsoluteFile().getParentFile().getParentFile() + "/modified with As " + currentMillis + " - " + file.getName();
 
             doTheLimboOnFileBasis(currentDir, originalFile[0].getAbsolutePath(), newFileName , modifiedFileName );
-            Files.move( Paths.get( newFileName ), Paths.get( currentDir + "/old_previous_runs/" + currentMillis + "/" + file.getName() ));
+            Files.move( Paths.get( newFileName ), Paths.get( currentDir + "/3old_previous_runs/" + currentMillis + "/" + file.getName() ));
         }
 
 
 
-        Files.move( Paths.get( originalFile[0].getAbsolutePath() ),Paths.get( currentDir + "/old_previous_runs/" + currentMillis + "/" + originalFile[0].getName() ));
+        Files.move( Paths.get( originalFile[0].getAbsolutePath() ),Paths.get( currentDir + "/3old_previous_runs/" + currentMillis + "/" + originalFile[0].getName() ));
 
         System.exit(0);
 
