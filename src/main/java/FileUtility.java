@@ -1,3 +1,4 @@
+import javax.swing.*;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -20,7 +21,18 @@ public class FileUtility {
 
         String modifiedFileName;
 
-        log( "Gegenwärtiger Ordner: " + currentDir );
+        JFrame jFrame = new JFrame();
+
+        JFileChooser j = new JFileChooser(currentDir);
+        j.setDialogTitle("Arbeitsordner auswählen");
+        j.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        j.showDialog(jFrame, "OK");
+
+        if ( j.getSelectedFile() != null ){
+            currentDir = j.getSelectedFile().getAbsolutePath();
+        }
+
+        log("Gegenwärtiger Ordner: " + currentDir);
 
         log( "Order \"1original\" für Originaldatei existiert: " + Boolean.toString( Files.exists( Paths.get ( currentDir + "/1original") ) ) );
         log( "Order \"2new\" für Originaldatei existiert: " + Boolean.toString( Files.exists( Paths.get ( currentDir + "/2new") ) ) );
@@ -32,6 +44,7 @@ public class FileUtility {
 
         if ( new File(currentDir + "/1original").list().length != 1 || new File(currentDir + "/2new").list().length != 1 ){
             log("\nJeder der oben genannten Ordner muß eine Datei enthalten.");
+            return;
         }
 
 
