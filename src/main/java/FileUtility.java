@@ -13,6 +13,13 @@ import java.nio.file.Paths;
 public class FileUtility {
 
 
+
+    /* Fuer ausfuehrbare jar Datei auf Ebene des Projektordners Console öffnen.
+     * Sodann mvn package absetzen.
+     */
+
+
+
     public static void main(String... aArgs) throws IOException {
 
 
@@ -42,7 +49,7 @@ public class FileUtility {
         }
 
 
-        if ( new File(currentDir + "/1original").list().length != 1 || new File(currentDir + "/2new").list().length != 1 ){
+        if ( new File(currentDir + "/1original").list().length != 1 || new File(currentDir + "/2new").list().length < 1 ){
             log("\nJeder der oben genannten Ordner muß eine Datei enthalten.");
             System.exit(0);
             return;
@@ -101,6 +108,7 @@ public class FileUtility {
 
         Files.move( Paths.get( originalFile[0].getAbsolutePath() ),Paths.get( currentDir + "/old_previous_runs/" + currentMillis + "/" + originalFile[0].getName() ));
 
+        System.exit(0);
 
     }
 
