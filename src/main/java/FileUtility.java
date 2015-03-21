@@ -10,17 +10,15 @@ import java.nio.file.Paths;
  */
 public class FileUtility {
 
-    private final static String currentDir = System.getProperty("user.dir");
-
-    private static String originalFileName;
-    private static String newFileName;
-
-    private String modifiedFileName;
-
-    private static int newByteBuffersize = 0;
-
 
     public static void main(String... aArgs) throws IOException {
+
+
+        String currentDir = System.getProperty("user.dir");
+
+
+        String originalFileName;
+        String newFileName;
 
         log( "Gegenwärtiger Ordner: " + currentDir );
 
@@ -40,12 +38,26 @@ public class FileUtility {
         newFileName =  new File(currentDir + "/2new").listFiles()[0].getAbsolutePath();
 
 
-        FileUtility binary = new FileUtility();
+        doTheLimboOnFileBasis(currentDir, originalFileName, newFileName);
 
-        byte[] originalBytes = binary.readSmallBinaryFile(originalFileName);
-        byte[] newBytes = binary.readSmallBinaryFile(newFileName);
+    }
+
+    private static void doTheLimboOnFileBasis(String currentDir, String originalFileName, String newFileName)
+            throws IOException {
+
+
+        FileUtility fileUtility = new FileUtility();
+
+        int newByteBuffersize = 0;
+
+        String modifiedFileName;
+
+
+        byte[] originalBytes = fileUtility.readBinaryFile(originalFileName);
+        byte[] newBytes = fileUtility.readBinaryFile(newFileName);
 
         newByteBuffersize = originalBytes.length;
+
 
         if ( originalBytes.length == newBytes.length ){
             log("\nDateien sind gleich groß.\n");
@@ -72,8 +84,11 @@ public class FileUtility {
         //bbuf.put((byte)0xFF); // position=0
 
 
+        //Unterschiede beider Dateien
         for (int i=0;i<originalBytes.length;i++) {
 
+            //Wenn Stelle an Originaldatei nich an höherer Stelle als Gesamtanzahl der Bytes
+            //der neuen Datei sowie Byte an Stelle zwischen beiden Dateien unterschiedlich sind.
             if ( i <= newBytes.length - 1 && originalBytes[i] != newBytes[i]){
                 bbuf.put( (byte) 0x41 );
             }
@@ -84,13 +99,13 @@ public class FileUtility {
 
         }
 
-
+        //Wenn neue Datei größer als alte übernimm ueberschuessige Bytes
+        //neuer Datei in Generierente.
         if ( newBytes.length > originalBytes.length ){
-            System.out.println(11111);
 
             for (int i=originalBytes.length;i<newBytes.length;i++) {
 
-                    bbuf.put( newBytes[i] );
+                bbuf.put( newBytes[i] );
 
             }
 
@@ -119,7 +134,7 @@ public class FileUtility {
 
         long currentMillis = System.currentTimeMillis();
 
-        binary.writeSmallBinaryFile(bbuf.array(), currentDir + "/" + "modified with As " + currentMillis + " - " + (new File(newFileName).getName().toString() ) );
+        fileUtility.writeBinaryFile(bbuf.array(), currentDir + "/" + "modified with As " + currentMillis + " - " + (new File(newFileName).getName().toString()));
 
         File dir = new File( currentDir + "/old_previous_runs/" + currentMillis );
 
@@ -138,22 +153,21 @@ public class FileUtility {
 
 
 
-        //Files.move( Paths.get( originalFileName ),Paths.get( currentDir + "/old_previous_runs/" + currentMillis + "/" + Paths.get( originalFileName ).getFileName()));
-        //Files.move( Paths.get( newFileName ),Paths.get( currentDir + "/old_previous_runs/" + currentMillis + "/" + Paths.get( newFileName ).getFileName() ));
-
+        Files.move( Paths.get( originalFileName ),Paths.get( currentDir + "/old_previous_runs/" + currentMillis + "/" + Paths.get( originalFileName ).getFileName()));
+        Files.move( Paths.get( newFileName ),Paths.get( currentDir + "/old_previous_runs/" + currentMillis + "/" + Paths.get( newFileName ).getFileName() ));
 
 
     }
 
 
-    byte[] readSmallBinaryFile(String aFileName) throws IOException {
+    byte[] readBinaryFile(String aFileName) throws IOException {
         Path path = Paths.get(aFileName);
         return Files.readAllBytes(path);
     }
 
-    void writeSmallBinaryFile(byte[] aBytes, String aFileName) throws IOException {
+    void writeBinaryFile(byte[] aBytes, String aFileName) throws IOException {
         Path path = Paths.get(aFileName);
-        Files.write(path, aBytes); //creates, overwrites
+        Files.write(path, aBytes);
     }
 
     private static void log(Object aMsg){
