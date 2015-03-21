@@ -44,6 +44,7 @@ public class FileUtility {
 
         if ( new File(currentDir + "/1original").list().length != 1 || new File(currentDir + "/2new").list().length != 1 ){
             log("\nJeder der oben genannten Ordner muß eine Datei enthalten.");
+            System.exit(0);
             return;
         }
 
