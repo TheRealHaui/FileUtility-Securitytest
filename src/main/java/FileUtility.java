@@ -1,4 +1,5 @@
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
@@ -17,8 +18,7 @@ public class FileUtility {
         String currentDir = System.getProperty("user.dir");
 
 
-        String originalFileName;
-        String newFileName;
+        String modifiedFileName;
 
         log( "Gegenwärtiger Ordner: " + currentDir );
 
@@ -34,23 +34,69 @@ public class FileUtility {
             log("\nJeder der oben genannten Ordner muß eine Datei enthalten.");
         }
 
-        originalFileName =  new File(currentDir + "/1original").listFiles()[0].getAbsolutePath();
-        newFileName =  new File(currentDir + "/2new").listFiles()[0].getAbsolutePath();
 
 
-        doTheLimboOnFileBasis(currentDir, originalFileName, newFileName);
+        long currentMillis = System.currentTimeMillis();
+
+        File dir = new File( currentDir + "/old_previous_runs/" + currentMillis );
+
+        //Nachdem zwei Ordner angelegt werden sollen kann Java das NATUERLICH WIEDER NICHT!
+        //Waere ansonsten ja NICHT DOGMATISCH!!
+        //Die Methode heißt ja mkdir und NICHT mkdirs!!!!
+        //Ich Vollidiot sehe den Fehler natuerich nicht!!!!
+        //Selbst schuld!!!!
+        //Wer braucht schon Fehlermeldung!!!!
+        //Ha, das ist doch nur etwas für Idioten!!!!
+        //Fehlermeldung pffffhhhhhh
+        //Wer die reine Lehre auf seiner Seite hat braucht so etwas PROFANES WIE FEHLERMELDUNGEN NATUERLICH nicht!!!!!!!
+        //HA!!!!
+        dir.mkdirs();
+
+
+
+        File[] newFileArray = new File( currentDir + "/2new" ).listFiles(new FileFilter() {
+            @Override
+            public boolean accept(File pathname) {
+                if (pathname.isDirectory())
+                    return false;
+
+                return true;
+            }
+        });
+
+        File[] originalFile = new File( currentDir + "/1original" ).listFiles(new FileFilter() {
+            @Override
+            public boolean accept(File pathname) {
+                if (pathname.isDirectory())
+                    return false;
+
+                return true;
+            }
+        });
+
+
+        for (File file : newFileArray) {
+            String newFileName = file.getAbsolutePath();
+            modifiedFileName =  file.getAbsoluteFile().getParentFile().getParentFile() + "/modified with As " + currentMillis + " - " + file.getName();
+
+            doTheLimboOnFileBasis(currentDir, originalFile[0].getAbsolutePath(), newFileName , modifiedFileName );
+            Files.move( Paths.get( newFileName ), Paths.get( currentDir + "/old_previous_runs/" + currentMillis + "/" + file.getName() ));
+        }
+
+
+
+        Files.move( Paths.get( originalFile[0].getAbsolutePath() ),Paths.get( currentDir + "/old_previous_runs/" + currentMillis + "/" + originalFile[0].getName() ));
+
 
     }
 
-    private static void doTheLimboOnFileBasis(String currentDir, String originalFileName, String newFileName)
+    private static void doTheLimboOnFileBasis(String currentDir, String originalFileName, String newFileName, String modifiedFileName)
             throws IOException {
 
 
         FileUtility fileUtility = new FileUtility();
 
         int newByteBuffersize = 0;
-
-        String modifiedFileName;
 
 
         byte[] originalBytes = fileUtility.readBinaryFile(originalFileName);
@@ -132,29 +178,8 @@ public class FileUtility {
         //bbuf.rewind(); // remaining=7
 
 
-        long currentMillis = System.currentTimeMillis();
 
-        fileUtility.writeBinaryFile(bbuf.array(), currentDir + "/" + "modified with As " + currentMillis + " - " + (new File(newFileName).getName().toString()));
-
-        File dir = new File( currentDir + "/old_previous_runs/" + currentMillis );
-
-        //Nachdem zwei Ordner angelegt werden sollen kann Java das NATUERLICH WIEDER NICHT!
-        //Waere ansonsten ja NICHT DOGMATISCH!!
-        //Die Methode heißt ja mkdir und NICHT mkdirs!!!!
-        //Ich Vollidiot sehe den Fehler natuerich nicht!!!!
-        //Selbst schuld!!!!
-        //Wer braucht schon Fehlermeldung!!!!
-        //Ha, das ist doch nur etwas für Idioten!!!!
-        //Fehlermeldung pffffhhhhhh
-        //Wer die reine Lehre auf seiner Seite hat braucht so etwas PROFANES WIE FEHLERMELDUNGEN NATUERLICH nicht!!!!!!!
-        //HA!!!!
-        dir.mkdirs();
-
-
-
-
-        Files.move( Paths.get( originalFileName ),Paths.get( currentDir + "/old_previous_runs/" + currentMillis + "/" + Paths.get( originalFileName ).getFileName()));
-        Files.move( Paths.get( newFileName ),Paths.get( currentDir + "/old_previous_runs/" + currentMillis + "/" + Paths.get( newFileName ).getFileName() ));
+        fileUtility.writeBinaryFile(bbuf.array(), modifiedFileName );
 
 
     }
