@@ -24,20 +24,20 @@ public class FileUtility {
 
         log( "Gegenwärtiger Ordner: " + currentDir );
 
-        log( "Order \"original\" für Originaldatei existiert: " + Boolean.toString( Files.exists( Paths.get ( currentDir + "/original") ) ) );
-        log( "Order \"new\" für Originaldatei existiert: " + Boolean.toString( Files.exists( Paths.get ( currentDir + "/new") ) ) );
+        log( "Order \"1original\" für Originaldatei existiert: " + Boolean.toString( Files.exists( Paths.get ( currentDir + "/1original") ) ) );
+        log( "Order \"2new\" für Originaldatei existiert: " + Boolean.toString( Files.exists( Paths.get ( currentDir + "/2new") ) ) );
 
-        if ( Files.exists( Paths.get ( currentDir + "/original") ) == false || Files.exists( Paths.get ( currentDir + "/new") ) == false  ){
+        if ( Files.exists( Paths.get ( currentDir + "/1original") ) == false || Files.exists( Paths.get ( currentDir + "/2new") ) == false  ){
             log("\nOrdner müssen für Verarbeitung existieren.");
         }
 
 
-        if ( new File(currentDir + "/original").list().length != 1 || new File(currentDir + "/new").list().length != 1 ){
+        if ( new File(currentDir + "/1original").list().length != 1 || new File(currentDir + "/2new").list().length != 1 ){
             log("\nJeder der oben genannten Ordner muß eine Datei enthalten.");
         }
 
-        originalFileName =  new File(currentDir + "/original").listFiles()[0].getAbsolutePath();
-        newFileName =  new File(currentDir + "/new").listFiles()[0].getAbsolutePath();
+        originalFileName =  new File(currentDir + "/1original").listFiles()[0].getAbsolutePath();
+        newFileName =  new File(currentDir + "/2new").listFiles()[0].getAbsolutePath();
 
 
         FileUtility binary = new FileUtility();
@@ -74,7 +74,7 @@ public class FileUtility {
 
         for (int i=0;i<originalBytes.length;i++) {
 
-            if (originalBytes[i] != newBytes[i]){
+            if ( i <= newBytes.length - 1 && originalBytes[i] != newBytes[i]){
                 bbuf.put( (byte) 0x41 );
             }
             else {
@@ -83,6 +83,19 @@ public class FileUtility {
             }
 
         }
+
+
+        if ( newBytes.length > originalBytes.length ){
+            System.out.println(11111);
+
+            for (int i=originalBytes.length;i<newBytes.length;i++) {
+
+                    bbuf.put( newBytes[i] );
+
+            }
+
+        }
+
 
 
         // Set the position
@@ -108,7 +121,7 @@ public class FileUtility {
 
         binary.writeSmallBinaryFile(bbuf.array(), currentDir + "/" + "modified with As " + currentMillis + " - " + (new File(newFileName).getName().toString() ) );
 
-        File dir = new File( currentDir + "/old/" + currentMillis );
+        File dir = new File( currentDir + "/old_previous_runs/" + currentMillis );
 
         //Nachdem zwei Ordner angelegt werden sollen kann Java das NATUERLICH WIEDER NICHT!
         //Waere ansonsten ja NICHT DOGMATISCH!!
@@ -122,14 +135,13 @@ public class FileUtility {
         //HA!!!!
         dir.mkdirs();
 
-        System.out.println( currentDir + "/old/" + currentMillis );
 
 
-        Files.move( Paths.get( originalFileName ),Paths.get( currentDir + "/old/" + currentMillis + "/" + Paths.get( originalFileName ).getFileName()));
-        Files.move( Paths.get( newFileName ),Paths.get( currentDir + "/old/" + currentMillis + "/" + Paths.get( newFileName ).getFileName() ));
 
-        //System.out.println(  Paths.get( currentDir + "/original" )  );
-        //System.out.println(  Paths.get( currentDir + "/new" )  );
+        //Files.move( Paths.get( originalFileName ),Paths.get( currentDir + "/old_previous_runs/" + currentMillis + "/" + Paths.get( originalFileName ).getFileName()));
+        //Files.move( Paths.get( newFileName ),Paths.get( currentDir + "/old_previous_runs/" + currentMillis + "/" + Paths.get( newFileName ).getFileName() ));
+
+
 
     }
 
